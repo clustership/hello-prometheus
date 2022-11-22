@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: hello-world-prometheus-monitor
+  name: hello-world-prometheus-monitor
+  namespace: ns1
+spec:
+  endpoints:
+  - interval: 15s
+    port: 9999
+    scheme: http
+  selector:
+    matchLabels:
+      app: hello-world-prometheus
