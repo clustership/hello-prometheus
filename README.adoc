@@ -1,0 +1,23 @@
+= Observability, Blackbox exporter and AlertManager with OpenShift
+
+== Introduction
+
+In this tutorial you'll build an application, deploy it and configure OpenShift Observability stack to monitor liveness of the application components. You'll then configure AlertManager to notify you if your application isn't responding.
+
+OpenShift Observability stack relies on Prometheus, an open-source monitoring system that collects metrics from your services and stores them in a time-series database.
+
+== Build the application
+
+The sample application is just a golang rest endpoints (Hello World) that exposes Prometheus metrics.
+
+Building the application is pretty simple. You can skip this part as it is already build and accessible in quay repository.
+
+
+[.console-output]
+[source,bash]
+----
+podman build -t quay.io/xymox/hello-prometheus:$(cat VERSION) .
+podman tag quay.io/xymox/hello-prometheus:$(cat VERSION) quay.io/xymox/hello-prometheus:latest
+podman push quay.io/xymox/hello-prometheus:$(cat VERSION)
+----
+

@@ -8,7 +8,7 @@ metadata:
   namespace: prometheus-demo
 spec:
   port:
-    targetPort: http
+    targetPort: http-port
   to:
     kind: Service
     name: hello-world

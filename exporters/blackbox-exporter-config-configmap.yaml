@@ -1,3 +1,8 @@
+#
+# BlackBox exporter configuration.
+# In this case, one instance of blackbox is running in the current namespace but
+# one global instance can also be configured and used by applications in namespaces
+#
 ---
 apiVersion: v1
 kind: ConfigMap

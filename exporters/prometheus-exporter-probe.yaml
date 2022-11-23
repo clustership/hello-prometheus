@@ -5,7 +5,7 @@ metadata:
 spec:
   module: http_2xx
   prober:
-    url: prometheus-exporter-probe-example-blackbox.prometheus-demo.svc:9115
+    url: prometheus-exporter-probe-hello-prometheus-blackbox.prometheus-demo.svc:9115
   targets:
     staticConfig:
       static:

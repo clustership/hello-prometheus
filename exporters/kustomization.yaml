@@ -11,9 +11,11 @@ commonLabels:
   prometheus-demo: ""
 
 resources:
-- probe-configmap.yaml
+- blackbox-exporter-config-configmap.yaml
 - prometheus-exporter.yaml
-- probe.yaml
+- prometheus-exporter-probe.yaml
+- blackbox-exporter-route.yaml
+- prometheus-rule.yaml
 
 #images:
 #- name: quay.io/xymox/hello-prometheus

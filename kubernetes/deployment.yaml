@@ -1,21 +1,29 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world
+  namespace: prometheus-demo
 spec:
+  progressDeadlineSeconds: 600
   replicas: 3
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: hello-world
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 66%
+    type: RollingUpdate
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app: hello-world
     spec:
       affinity:
         podAntiAffinity:
-          preferedDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
               - key: app
@@ -23,17 +31,65 @@ spec:
                 values:
                 - hello-world
             topologyKey: "kubernetes.io/hostname"
+      serviceAccountName: hello-prometheus
       containers:
-      - image: quay.io/xymox/hello-prometheus:0.0.2
-        name: hello-world
+      - name: hello-world
+        image: quay.io/xymox/hello-prometheus:0.0.2
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PORT
+          value: "9999"
+        ports:
+        - containerPort: 9999
+          name: http-port
+          protocol: TCP
+        startupProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http-port
+            scheme: HTTP
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http-port
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: http-port
+            scheme: HTTP
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 150m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            - "ALL"
+            - ALL
           runAsNonRoot: true
           seccompProfile:
-            type: "RuntimeDefault"
-        env:
-        - name: PORT
-          value: "9999"
+            type: RuntimeDefault
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
