@@ -13,6 +13,27 @@ spec:
       labels:
         app: hello-world
     spec:
+      affinity:
+        podAntiAffinity:
+          preferedDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - hello-world
+            topologyKey: "kubernetes.io/hostname"
       containers:
-      - image: quay.io/xymox/hello-world-prometheus
+      - image: quay.io/xymox/hello-prometheus:0.0.2
         name: hello-world
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - "ALL"
+          runAsNonRoot: true
+          seccompProfile:
+            type: "RuntimeDefault"
+        env:
+        - name: PORT
+          value: "9999"

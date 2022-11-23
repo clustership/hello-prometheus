@@ -3,10 +3,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hello-world
+  namespace: prometheus-demo
+  labels:
+    app: hello-world
 spec:
   type: ClusterIP  
   ports:
-  - name: "hello-world"
+  - name: http
     port: 9999
+    targetPort: 9999
   selector:
     app: hello-world

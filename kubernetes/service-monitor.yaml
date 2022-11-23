@@ -4,12 +4,12 @@ metadata:
   labels:
     k8s-app: hello-world-prometheus-monitor
   name: hello-world-prometheus-monitor
-  namespace: ns1
+  namespace: prometheus-demo
 spec:
   endpoints:
   - interval: 15s
-    port: 9999
+    port: http
     scheme: http
   selector:
     matchLabels:
-      app: hello-world-prometheus
+      app: hello-world

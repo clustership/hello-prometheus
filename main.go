@@ -9,6 +9,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+        "github.com/gorilla/handlers"
 )
 
 var (
@@ -21,7 +23,7 @@ var (
 func main() {
 	log.Println("Starting hello-world server...")
 	mux := http.NewServeMux()
-	mux.Handle("/metrics", promhttp.Handler())
+	mux.Handle("/metrics", handlers.LoggingHandler(os.Stdout, promhttp.Handler()))
 	mux.HandleFunc("/", helloServer)
 
 	log.Fatal(http.ListenAndServe(ListenPort(), mux))

@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: prometheus-exporter-probe-example-blackbox
+    prometheus_exporter: example-blackbox
+    prometheus_exporter_type: probe
+  name: prometheus-exporter-probe-example-blackbox
+  namespace: prometheus-demo
+spec:
+  port:
+    targetPort: metrics
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: prometheus-exporter-probe-example-blackbox
+    weight: 100
+  wildcardPolicy: None

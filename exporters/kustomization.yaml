@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: prometheus-demo
+
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "10"
+
+commonLabels:
+  prometheus-demo: ""
+
+resources:
+- probe-configmap.yaml
+- prometheus-exporter.yaml
+- probe.yaml
+
+#images:
+#- name: quay.io/xymox/hello-prometheus
+#  newTag: 0.0.1

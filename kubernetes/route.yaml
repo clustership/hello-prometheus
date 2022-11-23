@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hello-world
+  name: hello-world
+  namespace: prometheus-demo
+spec:
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: hello-world
+    weight: 100
+  tls:
+    termination: edge

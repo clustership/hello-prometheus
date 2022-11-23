@@ -1,0 +1,18 @@
+apiVersion: monitoring.3scale.net/v1alpha1
+kind: PrometheusExporter
+metadata:
+  name: example-blackbox
+  labels:
+    exporter: blackbox
+  namespace: openshift-operators
+spec:
+  type: probe
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+  grafanaDashboard:
+    label:
+      key: autodiscovery
+      value: enabled
+  configurationConfigmapName: hello-prometheus-exporter-probe-blackbox
+  logLevel: debug

@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hello-prometheus-http-alert
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: blackbox-alert
+    rules:
+    - alert: BlackBoxAlert
+      annotations:
+        description: |
+          BlackBox alert demo.
+        runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NodeWithoutOVNKubeNodePodRunning.md
+        summary: All http monitor should be running, {{ $labels.node }} is not.
+      expr: |
+        up{job="probe/prometheus-demo/prometheus-exporter-probe-http-kubernetes-io"}
+        or probe_success{job="probe/prometheus-demo/prometheus-exporter-probe-http-kubernetes-io"} == 0
+      labels:
+        severity: critical
