@@ -1,0 +1,67 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-restart-rate
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: prometheus-hello-app
+    rules:
+    - alert: RestartRateAnomaly
+      annotations:
+        description: |
+          Container Restart Rate Anomaly
+        runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NodeWithoutOVNKubeNodePodRunning.md
+        summary: Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) a redemarre {{ printf "%.2f" $value }} fois dans 5 minutes
+      expr: |
+        rate(kube_pod_container_status_restarts_total{container="hello-world",namespace="prometheus-demo"}[15m]) * 60 * 1 > 0
+      labels:
+        severity: critical
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: deployment-no-replicas
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: prometheus-hello-app
+    rules:
+    - alert: Deployment at 0 replicas
+      annotations:
+        description: |
+          Deployment at 0 replicas
+        runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NodeWithoutOVNKubeNodePodRunning.md
+        summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was restarted
+      expr: |
+        sum by (deployment, namespace) (kube_deployment_status_replicas{namespace="prometheus-demo",pod_template_hash=""}) < 1
+      for: 1m
+      labels:
+        severity: critical
+        team: devops
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: container-restarts
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: prometheus-hello-app
+    rules:
+    - alert: Container restarted
+      annotations:
+        description: |
+          Container Restarted
+        runbook_url: https://github.com/openshift/runbooks/blob/master/alerts/cluster-network-operator/NodeWithoutOVNKubeNodePodRunning.md
+        summary: Container named {{$labels.container}} in {{$labels.pod}} in {{$labels.namespace}} was restarted
+      expr: |
+        sum(increase(kube_pod_container_status_restarts_total{namespace!="kube-system",pod_template_hash=""}[1m])) by (pod,namespace,container) > 0
+      for: 0m
+      labels:
+        severity: critical
+        team: dev
